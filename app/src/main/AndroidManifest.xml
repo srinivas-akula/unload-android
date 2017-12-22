@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="in.sapota.unload">
+    package="com.sringa.unload.service">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
-        android:name="in.sapota.main.MainApplication"
+        android:name="in.com.sringa.main.MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="in.sapota.main.MainActivity"
+            android:name="in.com.sringa.main.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +35,7 @@
 
         <!-- User Phone Auth Activity -->
         <activity
-            android:name="in.sapota.activity.UserPhoneAuthActivity"
+            android:name="in.com.sringa.activity.UserPhoneAuthActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_AUTH" />
@@ -45,7 +45,7 @@
 
         <!-- OTP Activity -->
         <activity
-            android:name="in.sapota.activity.OtpActivity"
+            android:name="in.com.sringa.activity.OtpActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.OTP" />
@@ -55,7 +55,7 @@
 
         <!-- User Profile Activity -->
         <activity
-            android:name="in.sapota.activity.AddVehicleActivity"
+            android:name="in.com.sringa.activity.AddVehicleActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.USER_PROFILE" />
@@ -65,7 +65,7 @@
 
         <!-- User Mode Activity -->
         <activity
-            android:name="in.sapota.activity.UserModeActivity"
+            android:name="in.com.sringa.activity.UserModeActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.USER_MODE" />
@@ -75,7 +75,7 @@
 
         <!-- Truck List Activity -->
         <activity
-            android:name="in.sapota.activity.VehicleListActivity"
+            android:name="in.com.sringa.activity.VehicleListActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.TRUCK_LIST" />
@@ -85,7 +85,7 @@
 
         <!-- About Activity -->
         <activity
-            android:name="in.sapota.activity.AboutActivity"
+            android:name="in.com.sringa.activity.AboutActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.ABOUT" />
@@ -96,7 +96,7 @@
 
         <!-- Status Activity -->
         <activity
-            android:name="in.sapota.activity.StatusActivity"
+            android:name="in.com.sringa.activity.StatusActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.STATUS" />
@@ -105,10 +105,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".TrackingService" />
-        <service android:name=".TrackingService$HideNotificationService" />
+        <service android:name="in.com.sringa.unload.TrackingService" />
+        <service android:name="in.com.sringa.unload.TrackingService$HideNotificationService" />
 
-        <receiver android:name=".AutostartReceiver">
+        <receiver android:name="in.com.sringa.unload.AutostartReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
