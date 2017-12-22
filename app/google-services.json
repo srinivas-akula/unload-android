@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1067950649403",
+    "firebase_url": "https://unload-93373.firebaseio.com",
+    "project_id": "unload-93373",
+    "storage_bucket": "unload-93373.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067950649403:android:341b4fcf9e2c4c19",
+        "android_client_info": {
+          "package_name": "in.sapota.unload"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1067950649403-j4ofj4jvctgb5s5jicgfjosrvva6hs1n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuAKsUoPbwCrlXoPtXAWindYaUg9-ISmM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

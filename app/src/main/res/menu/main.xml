@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/clear"
+        android:title="@string/menu_clear"
+        app:showAsAction="always"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/vehicles"
+        android:title="@string/menu_vehicles" />
+
+    <item
+        android:id="@+id/status"
+        android:title="@string/menu_status"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/about"
+        android:title="@string/menu_about"
+        app:showAsAction="never" />
+
+    //TODO: do it in future.
+    <!--<item-->
+        <!--android:id="@+id/feedback"-->
+        <!--android:title="@string/menu_feedback"-->
+        <!--app:showAsAction="never" />-->
+</menu>

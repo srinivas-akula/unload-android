@@ -1,0 +1,79 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="60dp">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp">
+
+            <EditText
+                android:id="@+id/vnumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                android:gravity="top"
+                android:hint="@string/vehicle_id"
+                android:inputType="textCapCharacters"
+                android:maxLength="10" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_tonnage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp">
+
+            <EditText
+                android:id="@+id/vtonnage"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/vehicle_tonnage"
+                android:inputType="number"
+                android:maxLength="2" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Spinner
+            android:id="@+id/vmodel"
+            style="@android:style/Widget.Holo.Light.Spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/vehicle_model_values"
+            android:paddingBottom="30dp"
+            android:paddingTop="30dp"
+            android:prompt="@string/vehicle_model"
+            android:spinnerMode="dropdown" />
+
+        <Spinner
+            android:id="@+id/vtype"
+            style="@android:style/Widget.Holo.Light.Spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/vehicle_type_values"
+            android:paddingBottom="30dp"
+            android:paddingTop="30dp"
+            android:prompt="@string/vehicle_type"
+            android:spinnerMode="dropdown" />
+
+        <Button
+            android:id="@+id/btnUpdate"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:text="@string/vehicle_submit"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
