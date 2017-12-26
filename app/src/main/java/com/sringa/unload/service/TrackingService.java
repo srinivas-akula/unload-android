@@ -26,6 +26,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import com.sringa.unload.R;
 
 import com.sringa.unload.main.MainActivity;
 import com.sringa.unload.activity.StatusActivity;

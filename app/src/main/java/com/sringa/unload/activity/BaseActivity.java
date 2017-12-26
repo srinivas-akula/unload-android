@@ -6,10 +6,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.sringa.unload.R;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sringa.unload.service.R;
 
 public abstract class BaseActivity extends AppCompatActivity {
 

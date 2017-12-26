@@ -9,7 +9,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.sringa.unload.db.AppDataBase;
-import com.sringa.unload.service.R;
+import com.sringa.unload.R;
 
 public class UserModeActivity extends AppCompatActivity implements View.OnClickListener {
 

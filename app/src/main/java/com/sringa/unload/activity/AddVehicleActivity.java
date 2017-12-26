@@ -13,16 +13,17 @@ import android.widget.Spinner;
 
 import com.sringa.unload.db.AppDataBase;
 import com.sringa.unload.db.VehicleDetail;
-import com.sringa.unload.service.R;
+import com.sringa.unload.R;
+import com.sringa.unload.utils.Utils;
 
 public class AddVehicleActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private Button btnSubmit;
     private EditText vNumber;
     private EditText vTonnage;
-    private Spinner typeSpinner;
+    private Spinner axleSpinner;
     private Spinner modelSpinner;
-    private String vtype;
+    private String axleType;
     private String vmodel;
     private String mode = "NEW";
     private VehicleDetail vDetail;
@@ -34,11 +35,11 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
 
         vNumber = (EditText) findViewById(R.id.vnumber);
         vTonnage = (EditText) findViewById(R.id.vtonnage);
-        typeSpinner = (Spinner) findViewById(R.id.vtype);
+        axleSpinner = (Spinner) findViewById(R.id.axleType);
         modelSpinner = (Spinner) findViewById(R.id.vmodel);
         btnSubmit = (Button) findViewById(R.id.btnUpdate);
 
-        typeSpinner.setOnItemSelectedListener(this);
+        axleSpinner.setOnItemSelectedListener(this);
         modelSpinner.setOnItemSelectedListener(this);
         btnSubmit.setOnClickListener(this);
         fillValues();
@@ -57,9 +58,9 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
                 vNumber.setFocusable(false);
                 vNumber.setKeyListener(null);
                 vTonnage.setText(Integer.toString(vDetail.getTonnage()));
-                typeSpinner.setSelection(getIndex(typeSpinner, vDetail.getType()));
+                axleSpinner.setSelection(getIndex(axleSpinner, vDetail.getType()));
                 modelSpinner.setSelection(getIndex(modelSpinner, vDetail.getModel()));
-                vtype = vDetail.getType();
+                axleType = vDetail.getType();
                 vmodel = vDetail.getModel();
             }
         }
@@ -95,7 +96,7 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
         }
         vDetail.setTonnage(Integer.valueOf(vTonnage.getText().toString()));
         vDetail.setModel(vmodel);
-        vDetail.setType(vtype);
+        vDetail.setType(axleType);
         boolean success = AppDataBase.INSTANCE.addOrUpadate(vDetail);
         if (success) {
             startActivity(new Intent(this, VehicleListActivity.class));
@@ -123,12 +124,14 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
             valid = false;
         }
 
-        if (null == vtype) {
-            vtype = getResources().getStringArray(R.array.vehicle_type_values)[0];
+        if (null == axleType || "Select Axle Type".equals(axleType)) {
+            Utils.setSpinnerError(axleSpinner, "Please Select Axle Type.");
+            valid = false;
         }
 
-        if (null == vmodel) {
-            vmodel = getResources().getStringArray(R.array.vehicle_model_values)[0];
+        if (null == vmodel || "Select Model".equals(vmodel)) {
+            Utils.setSpinnerError(modelSpinner, "Please Select Model.");
+            valid = false;
         }
         return valid;
     }
@@ -137,8 +140,8 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
 
         if (parent.getId() == R.id.vmodel) {
             vmodel = parent.getItemAtPosition(pos).toString();
-        } else if (parent.getId() == R.id.vtype) {
-            vtype = parent.getItemAtPosition(pos).toString();
+        } else if (parent.getId() == R.id.axleType) {
+            axleType = parent.getItemAtPosition(pos).toString();
         }
     }
 

@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.sringa.unload.service.ProtocolFormatter;
-import com.sringa.unload.service.R;
+import com.sringa.unload.R;
 import com.sringa.unload.service.RequestManager;
 
 public class UserPhoneAuthActivity extends AppCompatActivity implements

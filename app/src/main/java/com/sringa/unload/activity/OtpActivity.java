@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.sringa.unload.db.AppDataBase;
 import com.sringa.unload.db.AppUser;
 import com.sringa.unload.service.ProtocolFormatter;
-import com.sringa.unload.service.R;
+import com.sringa.unload.R;
 import com.sringa.unload.service.RequestManager;
 
 public class OtpActivity extends AppCompatActivity implements

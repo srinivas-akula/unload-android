@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import com.sringa.unload.service.R;
+import com.sringa.unload.R;
 
 public class StatusActivity extends BaseActivity {
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.sringa.unload.db.AppDataBase;
 import com.sringa.unload.db.VehicleDetail;
-import com.sringa.unload.service.R;
+import com.sringa.unload.R;
 
 public class VehicleTouchCallback extends ItemTouchHelper.SimpleCallback {
 

@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.View;
 
 import com.sringa.unload.db.AppDataBase;
-import com.sringa.unload.service.R;
+import com.sringa.unload.R;
 
 public class VehicleListActivity extends BaseActivity implements View.OnClickListener {
 

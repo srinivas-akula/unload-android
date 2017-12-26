@@ -43,11 +43,14 @@
     <string name="btn_okay">Ok</string>
 
     <string-array name="vehicle_type_values" translatable="false">
-        <item>Transport</item>
-        <item>Non-Transport</item>
+        <item>Select Axle Type</item>
+        <item>XL</item>
+        <item>XXL</item>
+        <item>XXXL</item>
     </string-array>
 
     <string-array name="vehicle_model_values" translatable="false">
+        <item>Select Model</item>
         <item>Semi-Bed</item>
         <item>Low-Bed</item>
         <item>High-Bed</item>
@@ -55,16 +58,6 @@
         <item>DCM</item>
         <item>Tata-ACE</item>
     </string-array>
-
-    <string-array name="states" translatable="false">
-        <item>AndhraPradesh</item>
-        <item>Telangana</item>
-        <item>TamilNadu</item>
-        <item>Karnataka</item>
-        <item>Kerala</item>
-        <item>Maharastra</item>
-    </string-array>
-
 
     <!-- Strings related to Menu -->
     <string name="menu_vehicles">Vehicles</string>

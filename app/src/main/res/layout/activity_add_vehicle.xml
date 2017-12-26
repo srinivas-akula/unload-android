@@ -57,7 +57,7 @@
             android:spinnerMode="dropdown" />
 
         <Spinner
-            android:id="@+id/vtype"
+            android:id="@+id/axleType"
             style="@android:style/Widget.Holo.Light.Spinner"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
