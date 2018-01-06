@@ -55,14 +55,14 @@ public class OtpActivity extends AppCompatActivity implements
                     mVerificationField.setError("Cannot be empty.");
                     return;
                 }
-                final String request = ProtocolFormatter.formatRequest(phoneNumber, code);
-                if (RequestManager.sendGetRequest(this, request, true)) {
-                    Toast.makeText(getApplicationContext(), "Your phone successfully verified.",
-                            Toast.LENGTH_SHORT).show();
-                    AppDataBase.INSTANCE.addAppUser(new AppUser(phoneNumber));
-                    Intent intent = new Intent(this, UserModeActivity.class);
-                    startActivity(intent);
-                }
+//                final String request = ProtocolFormatter.formatRequest(phoneNumber, code);
+//                if (RequestManager.sendGetRequest(this, request, true)) {
+//                    Toast.makeText(getApplicationContext(), "Your phone successfully verified.",
+//                            Toast.LENGTH_SHORT).show();
+//                    AppDataBase.INSTANCE.addAppUser(new AppUser());
+//                    Intent intent = new Intent(this, UserModeActivity.class);
+//                    startActivity(intent);
+//                }
                 break;
             case R.id.button_resend:
                 break;

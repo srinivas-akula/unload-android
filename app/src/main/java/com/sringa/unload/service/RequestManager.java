@@ -15,18 +15,23 @@
  */
 package com.sringa.unload.service;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.sringa.unload.db.AppDataBase;
+import com.sringa.unload.db.AppUser;
+
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-
-import com.sringa.unload.utils.Utils;
 
 public class RequestManager {
 
@@ -85,20 +90,78 @@ public class RequestManager {
         task.execute(request);
     }
 
-    public static boolean sendGetRequest(Context context, String request, boolean showMessage) {
+    public static String sendPostRequest(String urlStr, JSONObject jsonObject) {
+        return sendRequest(urlStr, "POST", jsonObject);
+    }
 
-        final boolean isOnline = Utils.isOnline(context);
-        if (isOnline) {
-            if (!TextUtils.isEmpty(request))
-                //TODO: Send post request.
-                return true;
-            return false;
-        } else {
-            if (showMessage) {
-                Toast.makeText(context, "No Internet connection.",
-                        Toast.LENGTH_LONG).show();
+    private static String sendRequest(String urlStr, String method, JSONObject jsonObject) {
+        String serverResponse = null;
+        try {
+            URL url = new URL(urlStr);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setDoOutput(true);
+            urlConnection.setDoInput(true);
+            urlConnection.setRequestMethod(method);
+            AppUser user = AppDataBase.INSTANCE.getAppUser();
+            final String encodedAuth = buildBasicAuthorizationString(user.getPhone(), user.getPassword());
+            urlConnection.setRequestProperty("Authorization", encodedAuth);
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+
+            if (null != jsonObject) {
+                DataOutputStream wr = new DataOutputStream(urlConnection.getOutputStream());
+                wr.writeBytes(jsonObject.toString());
+                wr.flush();
+                wr.close();
             }
-            return false;
+            urlConnection.connect();
+
+            int responseCode = urlConnection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                serverResponse = readStream(urlConnection.getInputStream());
+            }
+        } catch (MalformedURLException e) {
+            Log.e("POST request", e.getLocalizedMessage());
+        } catch (IOException e) {
+            Log.e("POST request", e.getLocalizedMessage());
         }
+        return serverResponse;
+
+    }
+
+    public static String sendPutRequest(String urlStr, JSONObject jsonObject) {
+        return sendRequest(urlStr, "PUT", jsonObject);
+    }
+
+    public static String sendDeleteRequest(String urlStr) {
+        return sendRequest(urlStr, "DELETE", null);
+    }
+
+    private static String buildBasicAuthorizationString(String username, String password) {
+
+        final String credentials = username + ":" + password;
+        return "Basic " + new String(Base64.encode(credentials.getBytes(), Base64.DEFAULT));
+    }
+
+    private static String readStream(InputStream in) {
+        BufferedReader reader = null;
+        StringBuffer response = new StringBuffer();
+        try {
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+        } catch (IOException e) {
+            Log.e("Read Response", e.getLocalizedMessage());
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e("Read Response", e.getLocalizedMessage());
+                }
+            }
+        }
+        return response.toString();
     }
 }

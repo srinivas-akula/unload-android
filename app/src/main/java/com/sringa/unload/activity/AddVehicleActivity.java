@@ -11,9 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.sringa.unload.R;
 import com.sringa.unload.db.AppDataBase;
 import com.sringa.unload.db.VehicleDetail;
-import com.sringa.unload.R;
 import com.sringa.unload.utils.Utils;
 
 public class AddVehicleActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
@@ -53,14 +53,14 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
             this.mode = mode;
             vDetail = (VehicleDetail) getIntent().getSerializableExtra("vehicle");
             if (null != vDetail) {
-                vNumber.setText(vDetail.getNumber());
+                vNumber.setText(vDetail.getId());
                 vNumber.setClickable(false);
                 vNumber.setFocusable(false);
                 vNumber.setKeyListener(null);
                 vTonnage.setText(Integer.toString(vDetail.getTonnage()));
-                axleSpinner.setSelection(getIndex(axleSpinner, vDetail.getType()));
+                axleSpinner.setSelection(getIndex(axleSpinner, vDetail.getAxle()));
                 modelSpinner.setSelection(getIndex(modelSpinner, vDetail.getModel()));
-                axleType = vDetail.getType();
+                axleType = vDetail.getAxle();
                 vmodel = vDetail.getModel();
             }
         }
@@ -92,12 +92,12 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
             vDetail = this.vDetail;
         } else {
             vDetail = new VehicleDetail();
-            vDetail.setNumber(prepareNumber(vNumber.getText().toString()));
+            vDetail.setId(prepareNumber(vNumber.getText().toString()));
         }
         vDetail.setTonnage(Integer.valueOf(vTonnage.getText().toString()));
         vDetail.setModel(vmodel);
-        vDetail.setType(axleType);
-        boolean success = AppDataBase.INSTANCE.addOrUpadate(vDetail);
+        vDetail.setAxle(axleType);
+        boolean success = "EDIT".equalsIgnoreCase(mode) ? AppDataBase.INSTANCE.update(vDetail) : AppDataBase.INSTANCE.add(vDetail);
         if (success) {
             startActivity(new Intent(this, VehicleListActivity.class));
         }

@@ -16,9 +16,14 @@
 package com.sringa.unload.service;
 
 import android.net.Uri;
+import android.util.Log;
 
-import com.sringa.unload.db.Constants;
+import com.sringa.unload.db.AppUser;
 import com.sringa.unload.db.Position;
+import com.sringa.unload.db.VehicleDetail;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ProtocolFormatter {
 
@@ -45,20 +50,34 @@ public class ProtocolFormatter {
         return builder.build().toString();
     }
 
-    public static String formatRequest(String phone) {
-        Uri serverUrl = Uri.parse(Constants.SERVER_URL);
-        Uri.Builder builder = serverUrl.buildUpon()
-                .appendPath(Constants.REST_SEND_OTP)
-                .appendQueryParameter("phone", phone);
-        return builder.build().toString();
+    public static JSONObject toJson(AppUser user) {
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("phone", user.getPhone());
+            obj.put("mode", user.getMode());
+            obj.put("uid", user.getUid());
+            obj.put("providerid", user.getProviderId());
+            obj.put("password", user.getPassword());
+            obj.put("displayname", user.getDisplayName());
+        } catch (JSONException e) {
+            Log.e("AppUser to JSON", e.getLocalizedMessage());
+        }
+        return obj;
     }
 
-    public static String formatRequest(String phone, String otp) {
-        Uri serverUrl = Uri.parse(Constants.SERVER_URL);
-        Uri.Builder builder = serverUrl.buildUpon()
-                .appendPath(Constants.REST_VERIFY_OTP)
-                .appendQueryParameter("phone", phone)
-                .appendQueryParameter("otp", otp);
-        return builder.build().toString();
+    public static JSONObject toJson(VehicleDetail vehicle) {
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("id", vehicle.getId());
+            obj.put("model", vehicle.getModel());
+            obj.put("tonnage", vehicle.getTonnage());
+            obj.put("load", vehicle.getLoad());
+            obj.put("axle", vehicle.getAxle());
+        } catch (JSONException e) {
+            Log.e("Vehicle to JSON", e.getLocalizedMessage());
+        }
+        return obj;
     }
 }

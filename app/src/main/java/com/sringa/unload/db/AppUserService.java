@@ -8,6 +8,7 @@ public class AppUserService extends DBService<AppUser> implements Converter<AppU
     public static final String CREATE_TABLE = "CREATE TABLE appuser (" +
             "id INTEGER PRIMARY KEY AUTOINCREMENT," +
             "phone TEXT," +
+            "password TEXT," +
             "provider TEXT," +
             "uid TEXT," +
             "mode TEXT," +
@@ -25,8 +26,9 @@ public class AppUserService extends DBService<AppUser> implements Converter<AppU
 
         ContentValues values = new ContentValues();
         values.put("phone", appUser.getPhone());
+        values.put("password", appUser.getPassword());
         values.put("provider", appUser.getProviderId());
-        values.put("uid", appUser.getuId());
+        values.put("uid", appUser.getUid());
         values.put("name", appUser.getDisplayName());
         values.put("mode", appUser.getMode());
         return values;
@@ -37,8 +39,9 @@ public class AppUserService extends DBService<AppUser> implements Converter<AppU
         AppUser appUser = new AppUser();
         appUser.setId(cursor.getLong(cursor.getColumnIndex("id")));
         appUser.setPhone(cursor.getString(cursor.getColumnIndex("phone")));
+        appUser.setPassword(cursor.getString(cursor.getColumnIndex("password")));
         appUser.setProviderId(cursor.getString(cursor.getColumnIndex("provider")));
-        appUser.setuId(cursor.getString(cursor.getColumnIndex("uid")));
+        appUser.setUid(cursor.getString(cursor.getColumnIndex("uid")));
         appUser.setDisplayName(cursor.getString(cursor.getColumnIndex("name")));
         appUser.setMode(cursor.getString(cursor.getColumnIndex("mode")));
         return appUser;

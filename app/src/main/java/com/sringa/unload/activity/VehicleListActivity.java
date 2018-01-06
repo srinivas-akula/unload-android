@@ -8,8 +8,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.View;
 
-import com.sringa.unload.db.AppDataBase;
 import com.sringa.unload.R;
+import com.sringa.unload.db.AppDataBase;
+import com.sringa.unload.db.AppUser;
 
 public class VehicleListActivity extends BaseActivity implements View.OnClickListener {
 
@@ -19,7 +20,6 @@ public class VehicleListActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vehicle_list);
         fabVehicle = (FloatingActionButton) findViewById(R.id.fabAddVehicle);
@@ -30,7 +30,7 @@ public class VehicleListActivity extends BaseActivity implements View.OnClickLis
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         AppDataBase appDb = AppDataBase.INSTANCE;
-        if (appDb.getUserMode().equals("Driver") && appDb.getVehicleCount() == 1) {
+        if (appDb.getUserMode().equals("D") && appDb.getVehicleCount() == 1) {
             fabVehicle.setVisibility(View.INVISIBLE);
         }
     }

@@ -82,6 +82,12 @@ public class DBService<T> {
         }
     }
 
+    public void delete(String id) {
+        if (db.delete(tableName, "id = ?", new String[]{id}) != 1) {
+            throw new SQLException();
+        }
+    }
+
     public void deleteAsync(final long id, DatabaseHandler<Void> handler) {
 
         new DatabaseAsyncTask<Void>(handler) {

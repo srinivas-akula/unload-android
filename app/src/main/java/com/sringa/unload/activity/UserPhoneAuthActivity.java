@@ -34,14 +34,14 @@ public class UserPhoneAuthActivity extends AppCompatActivity implements
         final String phoneNumber = mPhoneNumberField.getText().toString();
         if (view.getId() == R.id.button_start_verification
                 && validatePhoneNumber(phoneNumber)) {
-            final String request = ProtocolFormatter.formatRequest(phoneNumber);
-            if (RequestManager.sendGetRequest(this, request, true)) {
-                Toast.makeText(getApplicationContext(), "OTP request sent. Please wait for the message.",
-                        Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, OtpActivity.class);
-                intent.putExtra("phoneNumber", mPhoneNumberField.getText().toString());
-                startActivity(intent);
-            }
+//            final String request = ProtocolFormatter.formatRequest(phoneNumber);
+//            if (RequestManager.sendGetRequest(this, request, true)) {
+//                Toast.makeText(getApplicationContext(), "OTP request sent. Please wait for the message.",
+//                        Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(this, OtpActivity.class);
+//                intent.putExtra("phoneNumber", mPhoneNumberField.getText().toString());
+//                startActivity(intent);
+//            }
         }
     }
 

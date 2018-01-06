@@ -7,7 +7,8 @@ public class AppUser {
     private String providerId;
     private String uId;
     private String displayName;
-    private String mode = "Driver";
+    private String mode = "O";
+    private String password;
 
     public long getId() {
         return id;
@@ -33,11 +34,11 @@ public class AppUser {
         this.providerId = providerId;
     }
 
-    public String getuId() {
+    public String getUid() {
         return uId;
     }
 
-    public void setuId(String uId) {
+    public void setUid(String uId) {
         this.uId = uId;
     }
 
@@ -57,10 +58,11 @@ public class AppUser {
         this.mode = mode;
     }
 
-    public AppUser() {
+    public String getPassword() {
+        return password;
     }
 
-    public AppUser(String phone) {
-        this.phone = phone;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

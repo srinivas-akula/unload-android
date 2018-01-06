@@ -69,10 +69,10 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder implements View.O
 
     public void initView(VehicleDetail detail) {
         this.vDetail = detail;
-        numberView.setText(vDetail.getNumber());
+        numberView.setText(vDetail.getId());
         modelTypeText.setText(vDetail.getModel());
         tonnageText.setText(String.valueOf(vDetail.getTonnage()) + " " + tonUnit);
-        axleType.setText(vDetail.getType());
+        axleType.setText(vDetail.getAxle());
         imgBtn.setImageResource(vDetail.getLoad() == 1 ? R.mipmap.ic_loaded
                 : R.mipmap.ic_unloaded_truck);
     }
@@ -85,7 +85,7 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder implements View.O
                     return;
                 }
                 vDetail.setLoad(1 - vDetail.getLoad());
-                if (AppDataBase.INSTANCE.addOrUpadate(vDetail))
+                if (AppDataBase.INSTANCE.add(vDetail))
                     mAdapter.notifyDataSetChanged();
                 expandableLayout.setVisibility(View.GONE);
                 isExpanded = false;

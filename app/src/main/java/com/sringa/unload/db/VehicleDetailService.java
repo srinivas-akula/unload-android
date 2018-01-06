@@ -6,10 +6,9 @@ import android.database.Cursor;
 public class VehicleDetailService extends DBService<VehicleDetail> implements Converter<VehicleDetail> {
 
     public static final String CREATE_TABLE = "CREATE TABLE vehicledetail (" +
-            "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-            "number TEXT NOT NULL," +
-            "type TEXT," +
-            "vmodel TEXT," +
+            "id TEXT PRIMARY KEY," +
+            "axle TEXT," +
+            "model TEXT," +
             "load INTEGER DEFAULT 0," +
             "tonnage INTEGER)";
 
@@ -24,9 +23,9 @@ public class VehicleDetailService extends DBService<VehicleDetail> implements Co
     public ContentValues convertToValues(VehicleDetail vehicleDetail) {
 
         ContentValues values = new ContentValues();
-        values.put("number", vehicleDetail.getNumber());
-        values.put("type", vehicleDetail.getType());
-        values.put("vmodel", vehicleDetail.getModel());
+        values.put("id", vehicleDetail.getId());
+        values.put("axle", vehicleDetail.getAxle());
+        values.put("model", vehicleDetail.getModel());
         values.put("load", vehicleDetail.getLoad());
         values.put("tonnage", vehicleDetail.getTonnage());
         return values;
@@ -36,10 +35,9 @@ public class VehicleDetailService extends DBService<VehicleDetail> implements Co
     public VehicleDetail convertToObject(Cursor cursor) {
 
         final VehicleDetail vehicleDetail = new VehicleDetail();
-        vehicleDetail.setId(cursor.getLong(cursor.getColumnIndex("id")));
-        vehicleDetail.setNumber(cursor.getString(cursor.getColumnIndex("number")));
-        vehicleDetail.setType(cursor.getString(cursor.getColumnIndex("type")));
-        vehicleDetail.setModel(cursor.getString(cursor.getColumnIndex("vmodel")));
+        vehicleDetail.setId(cursor.getString(cursor.getColumnIndex("id")));
+        vehicleDetail.setAxle(cursor.getString(cursor.getColumnIndex("axle")));
+        vehicleDetail.setModel(cursor.getString(cursor.getColumnIndex("model")));
         vehicleDetail.setLoad(cursor.getInt(cursor.getColumnIndex("load")));
         vehicleDetail.setTonnage(cursor.getInt(cursor.getColumnIndex("tonnage")));
         return vehicleDetail;
