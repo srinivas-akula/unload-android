@@ -46,7 +46,6 @@ public abstract class PositionProvider {
     private final Context context;
     protected final LocationManager locationManager;
 
-    private String deviceId;
     protected String type;
     protected long requestInterval;
     protected long interval;
@@ -62,7 +61,6 @@ public abstract class PositionProvider {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
-        deviceId = AppDataBase.INSTANCE.getVehicleNumber();
         interval = INTERVAL * 1000;
         distance = 0;
         angle = 0;
@@ -87,7 +85,7 @@ public abstract class PositionProvider {
                 || angle > 0 && Math.abs(location.getBearing() - lastLocation.getBearing()) >= angle)) {
             Log.i(TAG, "location new");
             lastLocation = location;
-            listener.onPositionUpdate(new Position(deviceId, location, getBatteryLevel(context)));
+            listener.onPositionUpdate(new Position(location, getBatteryLevel(context)));
         } else {
             Log.i(TAG, location != null ? "location ignored" : "location nil");
         }

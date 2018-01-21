@@ -65,7 +65,7 @@ public class DBService<T> {
         return db.insertOrThrow(tableName, null, values);
     }
 
-    public void insertAsync(final T t, DatabaseHandler<Void> handler) {
+    public void insertAsync(final T t, final DatabaseHandler<Void> handler) {
 
         new DatabaseAsyncTask<Void>(handler) {
             @Override
@@ -102,7 +102,7 @@ public class DBService<T> {
     public T select() {
 
         T t = null;
-        Cursor cursor = db.rawQuery(selectQuery("1"), null);
+        Cursor cursor = db.rawQuery(selectQuery(null, "1"), null);
         try {
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -116,9 +116,9 @@ public class DBService<T> {
         return t;
     }
 
-    public List<T> selectAll() {
+    public List<T> selectAll(String order, String limit) {
 
-        final Cursor cursor = db.rawQuery(selectQuery(null), null);
+        final Cursor cursor = db.rawQuery(selectQuery(order, limit), null);
         try {
             if (cursor.getCount() != 0) {
                 List<T> list = new ArrayList<>();
@@ -135,6 +135,10 @@ public class DBService<T> {
         return Collections.emptyList();
     }
 
+    public List<T> selectAll() {
+        return selectAll(null, null);
+    }
+
     public void selectAsync(DatabaseHandler<T> handler) {
         new DatabaseAsyncTask<T>(handler) {
             @Override
@@ -149,13 +153,16 @@ public class DBService<T> {
         return db.update(tableName, values, null, null);
     }
 
-    private String selectQuery(String limit) {
+    private String selectQuery(String order, String limit) {
         StringBuilder builder = new StringBuilder();
         builder.append("SELECT * FROM ")
                 .append(tableName)
                 .append(" ORDER BY id ");
+        if (null != order) {
+            builder.append(order);
+        }
         if (null != limit) {
-            builder.append("LIMIT ").append(limit);
+            builder.append(" LIMIT ").append(limit);
         }
         return builder.toString();
     }

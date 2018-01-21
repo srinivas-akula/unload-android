@@ -5,24 +5,23 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+import android.os.PowerManager;
 
-import com.sringa.unload.service.ProtocolFormatter;
-import com.sringa.unload.service.RequestManager;
-
-import org.json.JSONObject;
+import com.sringa.unload.activity.StatusActivity;
+import com.sringa.unload.service.IRequestManager;
+import com.sringa.unload.service.NetworkManager;
+import com.sringa.unload.service.RequestManagerImpl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import static com.sringa.unload.db.Constants.DATABASE_NAME;
 import static com.sringa.unload.db.Constants.DATABASE_VERSION;
-import static com.sringa.unload.db.Constants.VEHICLE_ID_RESOURCE;
-import static com.sringa.unload.db.Constants.VEHICLE_RESOURCE;
 
-public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
+public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, NetworkManager.NetworkHandler {
 
     private final SQLiteDatabase db;
 
@@ -30,7 +29,20 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
 
     private Map<String, VehicleDetail> vehicleDetails;
 
+    private LinkedList<String> logs;
+
+    private PowerManager.WakeLock wakeLock;
+
+    private static final int WAKE_LOCK_TIMEOUT = 120 * 1000;
+
+    private String vehicleNumber;
+
     private AppUser user;
+
+    private final IRequestManager requestManager;
+
+    private boolean isOnline;
+    private NetworkManager networkManager;
 
     public static void init(Context context) {
         if (null == INSTANCE) {
@@ -41,6 +53,28 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
     private AppDataBase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         db = getWritableDatabase();
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
+        networkManager = new NetworkManager(context, this);
+        isOnline = networkManager.isOnline();
+        this.requestManager = new RequestManagerImpl();
+    }
+
+    public IRequestManager getRequestManager() {
+        return this.requestManager;
+    }
+
+    public List<String> getLogs() {
+        return logs;
+    }
+
+    private void loadLogs() {
+        logs = new LinkedList<>();
+        final LogService logService = new LogService();
+        List<LogDetail> logDetails = logService.selectAll("DESC", null);
+        for (LogDetail detail : logDetails) {
+            logs.add(detail.getLog());
+        }
     }
 
     public List<VehicleDetail> getVehicleDetails() {
@@ -67,7 +101,7 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
         return vehicleDetails.get(number);
     }
 
-    public boolean add(VehicleDetail vehicle) {
+    public boolean add(final VehicleDetail vehicle) {
 
         if (null == vehicle) {
             return false;
@@ -79,15 +113,12 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
             if (null != existing) {
                 throw new Exception("Vechicle " + existing.getId() + " already exists");
             }
-            service.insert(vehicle);
-            final JSONObject json = ProtocolFormatter.toJson(vehicle);
-            final String response = RequestManager.sendPostRequest(VEHICLE_RESOURCE, json);
-            if (null != response) {
-                this.vehicleDetails.put(vehicle.getId(), vehicle);
-            }
-            success = true;
         } catch (Exception e) {
-            Log.e("Add Vehicle", e.getLocalizedMessage());
+            success = false;
+            StatusActivity.addMessage("Add Vehicle " + e.toString());
+        }
+        if (getAppUser().isDriverMode()) {
+            vehicleNumber = vehicle.getId();
         }
         return success;
     }
@@ -104,16 +135,8 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
             if (null == existing) {
                 throw new Exception("Vechicle " + existing.getId() + " doesn't exists to udpate.");
             }
-            service.update(vehicle);
-            final JSONObject json = ProtocolFormatter.toJson(vehicle);
-            String urlStr = String.format(VEHICLE_ID_RESOURCE, vehicle.getId());
-            final String response = RequestManager.sendPutRequest(urlStr, json);
-            if (null != response) {
-                this.vehicleDetails.put(vehicle.getId(), vehicle);
-            }
-            success = true;
         } catch (Exception e) {
-            Log.e("Add/Update Vehicle", e.getLocalizedMessage());
+            StatusActivity.addMessage("Update Vehicle " + e.toString());
         }
         return success;
     }
@@ -123,18 +146,13 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
         if (null == vehicle || null == vehicle.getId()) {
             return false;
         }
-        boolean success = true;
+        boolean success = false;
         try {
             final VehicleDetailService service = new VehicleDetailService();
             service.delete(vehicle.getId());
-            final String urlStr = String.format(VEHICLE_ID_RESOURCE, vehicle.getId());
-            final String response = RequestManager.sendDeleteRequest(urlStr);
-            if (null != response) {
-                this.vehicleDetails.remove(vehicle.getId());
-            }
+            this.vehicleDetails.remove(vehicle.getId());
         } catch (Exception e) {
-            Log.e("Delete Vehicle", e.getLocalizedMessage());
-            success = false;
+            StatusActivity.addMessage("Delete Vehicle " + e.toString());
         }
         return success;
     }
@@ -165,6 +183,27 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
         return user;
     }
 
+    public void deleteAppUser(AppUser user) {
+        if (null != user) {
+            final AppUserService userService = new AppUserService();
+            userService.delete(user.getId());
+            this.user = null;
+        }
+    }
+
+    public void addLog(String message) {
+        final LogService logService = new LogService();
+        logService.insert(new LogDetail(message));
+        addToCache(message);
+    }
+
+    private void addToCache(String message) {
+        if (null == logs) {
+            loadLogs();
+        }
+        logs.addFirst(message);
+    }
+
     public String getUserMode() {
         return null == user ? null : user.getMode();
     }
@@ -193,6 +232,7 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
         sqLiteDatabase.execSQL(PositionService.CREATE_TABLE);
         sqLiteDatabase.execSQL(AppUserService.CREATE_TABLE);
         sqLiteDatabase.execSQL(VehicleDetailService.CREATE_TABLE);
+        sqLiteDatabase.execSQL(LogService.CREATE_TABLE);
     }
 
     @Override
@@ -200,10 +240,33 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase {
         sqLiteDatabase.execSQL(PositionService.DROP_TABLE);
         sqLiteDatabase.execSQL(AppUserService.DROP_TABLE);
         sqLiteDatabase.execSQL(VehicleDetailService.DROP_TABLE);
+        sqLiteDatabase.execSQL(LogService.DROP_TABLE);
         onCreate(sqLiteDatabase);
     }
 
+    private void lock() {
+        wakeLock.acquire(WAKE_LOCK_TIMEOUT);
+    }
+
+    private void unlock() {
+        if (wakeLock.isHeld()) {
+            wakeLock.release();
+        }
+    }
+
     public String getVehicleNumber() {
-        return null;
+        return vehicleNumber;
+    }
+
+    @Override
+    public void onNetworkUpdate(boolean isOnline) {
+        if (!isOnline) {
+            //can do something.
+        }
+        this.isOnline = isOnline;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
     }
 }

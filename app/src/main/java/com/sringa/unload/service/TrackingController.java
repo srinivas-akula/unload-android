@@ -22,12 +22,17 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.sringa.unload.R;
 import com.sringa.unload.activity.StatusActivity;
+import com.sringa.unload.db.AppDataBase;
 import com.sringa.unload.db.Constants;
 import com.sringa.unload.db.DBService;
 import com.sringa.unload.db.Position;
 import com.sringa.unload.db.PositionService;
-import com.sringa.unload.R;
+
+import org.json.JSONObject;
+
+import static com.sringa.unload.db.Constants.POSITION_RESOURCE;
 
 public class TrackingController implements PositionProvider.PositionListener, NetworkManager.NetworkHandler {
 
@@ -35,7 +40,6 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
     private static final int RETRY_DELAY = 30 * 1000;
     private static final int WAKE_LOCK_TIMEOUT = 120 * 1000;
 
-    private boolean isOnline;
     private boolean isWaiting;
 
     private Context context;
@@ -67,7 +71,6 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
         positionProvider = new SimplePositionProvider(context, this);
         positionService = new PositionService();
         networkManager = new NetworkManager(context, this);
-        isOnline = networkManager.isOnline();
 
         url = Constants.SERVER_URL;
 
@@ -76,7 +79,7 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
     }
 
     public void start() {
-        if (isOnline) {
+        if (AppDataBase.INSTANCE.isOnline()) {
             read();
         }
         try {
@@ -107,11 +110,6 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
 
     @Override
     public void onNetworkUpdate(boolean isOnline) {
-        StatusActivity.addMessage(context.getString(R.string.status_connectivity_change));
-        if (!this.isOnline && isOnline) {
-            read();
-        }
-        this.isOnline = isOnline;
     }
 
     //
@@ -136,11 +134,12 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
     private void write(Position position) {
         log("write", position);
         lock();
+        position.setDeviceId(AppDataBase.INSTANCE.getVehicleNumber());
         positionService.insertAsync(position, new DBService.DatabaseHandler<Void>() {
             @Override
             public void onComplete(boolean success, Void result) {
                 if (success) {
-                    if (isOnline && isWaiting) {
+                    if (AppDataBase.INSTANCE.isOnline() && isWaiting) {
                         read();
                         isWaiting = false;
                     }
@@ -151,6 +150,7 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
     }
 
     private void read() {
+
         log("read", null);
         lock();
         positionService.selectAsync(new DBService.DatabaseHandler<Position>() {
@@ -158,16 +158,12 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
             public void onComplete(boolean success, Position result) {
                 if (success) {
                     if (result != null) {
-                        //TODO: verify here.
-//                            send(result);
-//                        } else {
-//                            delete(result);
-//                        }
+                        send(result);
                     } else {
                         isWaiting = true;
                     }
                 } else {
-//                    retry();
+                    retry();
                 }
                 unlock();
             }
@@ -193,11 +189,11 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
     private void send(final Position position) {
         log("send", position);
         lock();
-        String request = ProtocolFormatter.formatRequest(url, position);
-        RequestManager.sendRequestAsync(request, new RequestManager.RequestHandler() {
+        final JSONObject jsonObject = ProtocolFormatter.toJson(position);
+        AppDataBase.INSTANCE.getRequestManager().sendAsyncRequest(IRequestManager.Method.POST, POSITION_RESOURCE, jsonObject, new IRequestManager.IRequestHandler() {
             @Override
-            public void onComplete(boolean success) {
-                if (success) {
+            public void onComplete(IRequestManager.Response response) {
+                if (response.isSuccess()) {
                     delete(position);
                 } else {
                     StatusActivity.addMessage(context.getString(R.string.status_send_fail));
@@ -213,7 +209,7 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (isOnline) {
+                if (AppDataBase.INSTANCE.isOnline()) {
                     read();
                 }
             }

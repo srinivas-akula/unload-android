@@ -1,5 +1,6 @@
 package com.sringa.unload.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,8 +14,13 @@ import android.widget.Spinner;
 
 import com.sringa.unload.R;
 import com.sringa.unload.db.AppDataBase;
+import com.sringa.unload.db.Constants;
 import com.sringa.unload.db.VehicleDetail;
+import com.sringa.unload.service.IRequestManager;
+import com.sringa.unload.service.ProtocolFormatter;
 import com.sringa.unload.utils.Utils;
+
+import org.json.JSONObject;
 
 public class AddVehicleActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -43,7 +49,6 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
         modelSpinner.setOnItemSelectedListener(this);
         btnSubmit.setOnClickListener(this);
         fillValues();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void fillValues() {
@@ -84,23 +89,56 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
 
-        if (!isDataValid()) {
-            return;
+        btnSubmit.setEnabled(false);
+        btnSubmit.setClickable(false);
+
+        if (AppDataBase.INSTANCE.isOnline() && isDataValid()) {
+
+            VehicleDetail vDetail = null;
+            if ("EDIT".equalsIgnoreCase(mode) && null != this.vDetail) {
+                vDetail = this.vDetail;
+            } else {
+                vDetail = new VehicleDetail();
+                vDetail.setId(prepareNumber(vNumber.getText().toString()));
+            }
+            vDetail.setTonnage(Integer.valueOf(vTonnage.getText().toString()));
+            vDetail.setModel(vmodel);
+            vDetail.setAxle(axleType);
+            final boolean editMode = "EDIT".equalsIgnoreCase(mode);
+
+            IRequestManager.Method method = IRequestManager.Method.POST;
+            String url = Constants.VEHICLE_RESOURCE;
+            final JSONObject jsonObject = ProtocolFormatter.toJson(vDetail);
+            if (editMode) {
+                method = IRequestManager.Method.PUT;
+                url = String.format(Constants.VEHICLE_ID_RESOURCE, vDetail.getId());
+            }
+
+            final ProgressDialog dialog = new ProgressDialog(AddVehicleActivity.this);
+            dialog.setMessage("Processing");
+            dialog.show();
+
+            final VehicleDetail vehicleDetail = vDetail;
+            AppDataBase.INSTANCE.getRequestManager().sendAsyncRequest(method, url, jsonObject, new IRequestManager.IRequestHandler() {
+
+                @Override
+                public void onComplete(IRequestManager.Response response) {
+                    if (response.isSuccess()) {
+                        boolean success = editMode ? AppDataBase.INSTANCE.update(vehicleDetail) : AppDataBase.INSTANCE.add(vehicleDetail);
+                        if (success) {
+                            moveOn();
+                        }
+                    }
+                }
+            });
+            dialog.dismiss();
         }
-        VehicleDetail vDetail = null;
-        if ("EDIT".equalsIgnoreCase(mode) && null != this.vDetail) {
-            vDetail = this.vDetail;
-        } else {
-            vDetail = new VehicleDetail();
-            vDetail.setId(prepareNumber(vNumber.getText().toString()));
-        }
-        vDetail.setTonnage(Integer.valueOf(vTonnage.getText().toString()));
-        vDetail.setModel(vmodel);
-        vDetail.setAxle(axleType);
-        boolean success = "EDIT".equalsIgnoreCase(mode) ? AppDataBase.INSTANCE.update(vDetail) : AppDataBase.INSTANCE.add(vDetail);
-        if (success) {
-            startActivity(new Intent(this, VehicleListActivity.class));
-        }
+        btnSubmit.setEnabled(true);
+        btnSubmit.setClickable(true);
+    }
+
+    private void moveOn() {
+        startActivity(new Intent(this, VehicleListActivity.class));
     }
 
     private boolean isDataValid() {

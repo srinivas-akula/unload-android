@@ -70,13 +70,28 @@ public class ProtocolFormatter {
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("id", vehicle.getId());
+            obj.put("number", vehicle.getId());
             obj.put("model", vehicle.getModel());
             obj.put("tonnage", vehicle.getTonnage());
             obj.put("load", vehicle.getLoad());
             obj.put("axle", vehicle.getAxle());
         } catch (JSONException e) {
             Log.e("Vehicle to JSON", e.getLocalizedMessage());
+        }
+        return obj;
+    }
+
+    public static JSONObject toJson(Position position) {
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("id", position.getId());
+//            obj.put("model", vehicle.getModel());
+//            obj.put("tonnage", vehicle.getTonnage());
+//            obj.put("load", vehicle.getLoad());
+//            obj.put("axle", vehicle.getAxle());
+        } catch (JSONException e) {
+            Log.e("Position to JSON", e.getLocalizedMessage());
         }
         return obj;
     }

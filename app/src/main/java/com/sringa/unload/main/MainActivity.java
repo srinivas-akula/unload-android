@@ -40,6 +40,12 @@ public class MainActivity extends BaseActivity {
         AppDataBase.init(this.getBaseContext());
         //Check if user exists??
         AppUser user = AppDataBase.INSTANCE.getAppUser();
+//        if(null == user) {
+//            user = new AppUser();
+//            user.setPhone("9492755325");
+//            user.setUid("xx235XX");
+//            user = AppDataBase.INSTANCE.addAppUser(user);
+//        }
         if (null == user) {
             FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
             if (null == fbUser) {
@@ -58,12 +64,13 @@ public class MainActivity extends BaseActivity {
                 user = createAppUser(fbUser);
             }
         }
-        if (null == user.getMode()) {
-            startActivity(new Intent(this, UserModeActivity.class));
-        } else {
-            startActivity(new Intent(this, VehicleListActivity.class));
+        if (null != user) {
+            if (null == user.getMode()) {
+                startActivity(new Intent(this, UserModeActivity.class));
+            } else {
+                startActivity(new Intent(this, VehicleListActivity.class));
+            }
         }
-        startService();
     }
 
     @Override

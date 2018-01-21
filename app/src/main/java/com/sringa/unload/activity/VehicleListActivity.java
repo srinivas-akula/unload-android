@@ -10,7 +10,6 @@ import android.view.View;
 
 import com.sringa.unload.R;
 import com.sringa.unload.db.AppDataBase;
-import com.sringa.unload.db.AppUser;
 
 public class VehicleListActivity extends BaseActivity implements View.OnClickListener {
 

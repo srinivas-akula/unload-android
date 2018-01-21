@@ -7,7 +7,7 @@ public class AppUser {
     private String providerId;
     private String uId;
     private String displayName;
-    private String mode = "O";
+    private String mode;
     private String password;
 
     public long getId() {
@@ -64,5 +64,9 @@ public class AppUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isDriverMode() {
+        return null != this.mode && mode.equals("D");
     }
 }

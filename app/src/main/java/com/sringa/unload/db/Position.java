@@ -18,15 +18,15 @@ package com.sringa.unload.db;
 import android.location.Location;
 import android.location.LocationManager;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Position {
+public class Position implements Serializable {
 
     public Position() {
     }
 
-    public Position(String deviceId, Location location, double battery) {
-        this.deviceId = deviceId;
+    public Position(Location location, double battery) {
         time = new Date(location.getTime());
         latitude = location.getLatitude();
         longitude = location.getLongitude();
