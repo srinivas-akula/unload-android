@@ -40,12 +40,12 @@ public class MainActivity extends BaseActivity {
         AppDataBase.init(this.getBaseContext());
         //Check if user exists??
         AppUser user = AppDataBase.INSTANCE.getAppUser();
-//        if(null == user) {
-//            user = new AppUser();
-//            user.setPhone("9492755325");
-//            user.setUid("xx235XX");
-//            user = AppDataBase.INSTANCE.addAppUser(user);
-//        }
+        if (null == user) {
+            user = new AppUser();
+            user.setPhone("8099968618");
+            user.setUid("xx235XX");
+            user = AppDataBase.INSTANCE.addAppUser(user);
+        }
         if (null == user) {
             FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
             if (null == fbUser) {
@@ -96,25 +96,20 @@ public class MainActivity extends BaseActivity {
     private AppUser createAppUser(FirebaseUser user) {
         final AppUser appUser = new AppUser();
         appUser.setPhone(user.getPhoneNumber());
-        appUser.setDisplayName(user.getDisplayName());
-        appUser.setProviderId(user.getProviderId());
+        appUser.setDisplayname(user.getDisplayName());
+        appUser.setProviderid(user.getProviderId());
         appUser.setUid(user.getUid());
         return AppDataBase.INSTANCE.addAppUser(appUser);
     }
 
     @Override
     protected void onDestroy() {
-        stopService();
+
+        if (AppDataBase.INSTANCE.isServiceStarted()) {
+            stopService(new Intent(getBaseContext(), TrackingService.class));
+            AppDataBase.INSTANCE.serviceStopped();
+        }
         super.onDestroy();
-    }
-
-    public void startService() {
-        startService(new Intent(getBaseContext(), TrackingService.class));
-    }
-
-    // Method to stop the service
-    public void stopService() {
-        stopService(new Intent(getBaseContext(), TrackingService.class));
     }
 
     @Override

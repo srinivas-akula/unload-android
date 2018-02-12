@@ -27,9 +27,9 @@ public class AppUserService extends DBService<AppUser> implements Converter<AppU
         ContentValues values = new ContentValues();
         values.put("phone", appUser.getPhone());
         values.put("password", appUser.getPassword());
-        values.put("provider", appUser.getProviderId());
+        values.put("provider", appUser.getProviderid());
         values.put("uid", appUser.getUid());
-        values.put("name", appUser.getDisplayName());
+        values.put("name", appUser.getDisplayname());
         values.put("mode", appUser.getMode());
         return values;
     }
@@ -40,9 +40,9 @@ public class AppUserService extends DBService<AppUser> implements Converter<AppU
         appUser.setId(cursor.getLong(cursor.getColumnIndex("id")));
         appUser.setPhone(cursor.getString(cursor.getColumnIndex("phone")));
         appUser.setPassword(cursor.getString(cursor.getColumnIndex("password")));
-        appUser.setProviderId(cursor.getString(cursor.getColumnIndex("provider")));
+        appUser.setProviderid(cursor.getString(cursor.getColumnIndex("provider")));
         appUser.setUid(cursor.getString(cursor.getColumnIndex("uid")));
-        appUser.setDisplayName(cursor.getString(cursor.getColumnIndex("name")));
+        appUser.setDisplayname(cursor.getString(cursor.getColumnIndex("name")));
         appUser.setMode(cursor.getString(cursor.getColumnIndex("mode")));
         return appUser;
     }

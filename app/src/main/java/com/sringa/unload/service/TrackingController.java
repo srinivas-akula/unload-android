@@ -16,7 +16,6 @@
 package com.sringa.unload.service;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -30,10 +29,6 @@ import com.sringa.unload.db.DBService;
 import com.sringa.unload.db.Position;
 import com.sringa.unload.db.PositionService;
 
-import org.json.JSONObject;
-
-import static com.sringa.unload.db.Constants.POSITION_RESOURCE;
-
 public class TrackingController implements PositionProvider.PositionListener, NetworkManager.NetworkHandler {
 
     private static final String TAG = TrackingController.class.getSimpleName();
@@ -44,10 +39,6 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
 
     private Context context;
     private Handler handler;
-    private SharedPreferences preferences;
-
-    private String url;
-
     private PositionProvider positionProvider;
     private PositionService positionService;
     private NetworkManager networkManager;
@@ -67,13 +58,9 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
     public TrackingController(Context context) {
         this.context = context;
         handler = new Handler();
-        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         positionProvider = new SimplePositionProvider(context, this);
         positionService = new PositionService();
         networkManager = new NetworkManager(context, this);
-
-        url = Constants.SERVER_URL;
-
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
     }
@@ -189,11 +176,11 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
     private void send(final Position position) {
         log("send", position);
         lock();
-        final JSONObject jsonObject = ProtocolFormatter.toJson(position);
-        AppDataBase.INSTANCE.getRequestManager().sendAsyncRequest(IRequestManager.Method.POST, POSITION_RESOURCE, jsonObject, new IRequestManager.IRequestHandler() {
+        String request = ProtocolFormatter.formatRequest(Constants.POSITION_SERVER_URL, position);
+        RequestManager.sendRequestAsync(request, new RequestManager.RequestHandler() {
             @Override
-            public void onComplete(IRequestManager.Response response) {
-                if (response.isSuccess()) {
+            public void onComplete(boolean success) {
+                if (success) {
                     delete(position);
                 } else {
                     StatusActivity.addMessage(context.getString(R.string.status_send_fail));

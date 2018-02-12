@@ -148,9 +148,9 @@ public class DBService<T> {
         }.execute();
     }
 
-    public int update(T t) {
+    public int update(T t, long id) {
         final ContentValues values = converter.convertToValues(t);
-        return db.update(tableName, values, null, null);
+        return db.update(tableName, values, "id = ?", new String[]{String.valueOf(id)});
     }
 
     private String selectQuery(String order, String limit) {

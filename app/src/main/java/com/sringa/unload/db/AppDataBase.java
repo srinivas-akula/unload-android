@@ -6,15 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.PowerManager;
+import android.util.Log;
 
-import com.sringa.unload.activity.StatusActivity;
 import com.sringa.unload.service.IRequestManager;
 import com.sringa.unload.service.NetworkManager;
 import com.sringa.unload.service.RequestManagerImpl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,9 +26,7 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
 
     public static AppDataBase INSTANCE;
 
-    private Map<String, VehicleDetail> vehicleDetails;
-
-    private LinkedList<String> logs;
+    private Map<String, VehicleDetail> vehicleDetails = new LinkedHashMap<>();
 
     private PowerManager.WakeLock wakeLock;
 
@@ -43,6 +40,20 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
 
     private boolean isOnline;
     private NetworkManager networkManager;
+
+    private boolean isServiceRunning = false;
+
+    public void serviceStarted() {
+        this.isServiceRunning = true;
+    }
+
+    public void serviceStopped() {
+        this.isServiceRunning = false;
+    }
+
+    public boolean isServiceStarted() {
+        return isServiceRunning;
+    }
 
     public static void init(Context context) {
         if (null == INSTANCE) {
@@ -64,37 +75,18 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
         return this.requestManager;
     }
 
-    public List<String> getLogs() {
-        return logs;
-    }
-
-    private void loadLogs() {
-        logs = new LinkedList<>();
-        final LogService logService = new LogService();
-        List<LogDetail> logDetails = logService.selectAll("DESC", null);
-        for (LogDetail detail : logDetails) {
-            logs.add(detail.getLog());
-        }
-    }
-
     public List<VehicleDetail> getVehicleDetails() {
-
-        if (null == vehicleDetails) {
-            vehicleDetails = new LinkedHashMap<>();
+        if (vehicleDetails.isEmpty()) {
             final VehicleDetailService service = new VehicleDetailService();
             for (VehicleDetail detail : service.selectAll()) {
-                vehicleDetails.put(detail.getId(), detail);
+                vehicleDetails.put(detail.getNumber(), detail);
             }
         }
         return new ArrayList<>(vehicleDetails.values());
     }
 
     public int getVehicleCount() {
-        if (null == vehicleDetails || vehicleDetails.isEmpty()) {
-            return 0;
-        } else {
-            return vehicleDetails.size();
-        }
+        return vehicleDetails.size();
     }
 
     public VehicleDetail getVehicle(String number) {
@@ -109,16 +101,18 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
         boolean success = false;
         try {
             final VehicleDetailService service = new VehicleDetailService();
-            final VehicleDetail existing = vehicleDetails.get(vehicle.getId());
-            if (null != existing) {
-                throw new Exception("Vechicle " + existing.getId() + " already exists");
+            final VehicleDetail existing = vehicleDetails.get(vehicle.getNumber());
+            if (null == existing) {
+                long id = service.insert(vehicle);
+                vehicle.setId(id);
+                this.vehicleDetails.put(vehicle.getNumber(), vehicle);
+                success = true;
             }
         } catch (Exception e) {
-            success = false;
-            StatusActivity.addMessage("Add Vehicle " + e.toString());
+            Log.e("Add Vehicle", e.toString());
         }
         if (getAppUser().isDriverMode()) {
-            vehicleNumber = vehicle.getId();
+            vehicleNumber = vehicle.getNumber();
         }
         return success;
     }
@@ -131,28 +125,31 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
         boolean success = false;
         try {
             final VehicleDetailService service = new VehicleDetailService();
-            final VehicleDetail existing = vehicleDetails.get(vehicle.getId());
-            if (null == existing) {
-                throw new Exception("Vechicle " + existing.getId() + " doesn't exists to udpate.");
+            final VehicleDetail existing = vehicleDetails.get(vehicle.getNumber());
+            if (null != existing) {
+                service.update(vehicle, existing.getId());
+                this.vehicleDetails.put(vehicle.getNumber(), vehicle);
+                success = true;
             }
         } catch (Exception e) {
-            StatusActivity.addMessage("Update Vehicle " + e.toString());
+            Log.e("Update Vehicle", e.toString());
         }
         return success;
     }
 
     public boolean deleteVehicle(VehicleDetail vehicle) {
 
-        if (null == vehicle || null == vehicle.getId()) {
+        if (null == vehicle || null == vehicle.getNumber() || 0 >= vehicle.getId()) {
             return false;
         }
         boolean success = false;
         try {
             final VehicleDetailService service = new VehicleDetailService();
             service.delete(vehicle.getId());
-            this.vehicleDetails.remove(vehicle.getId());
+            this.vehicleDetails.remove(vehicle.getNumber());
+            success = true;
         } catch (Exception e) {
-            StatusActivity.addMessage("Delete Vehicle " + e.toString());
+            Log.e("Delete Vehicle ", e.toString());
         }
         return success;
     }
@@ -178,7 +175,7 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
             final AppUserService userService = new AppUserService();
             this.user.setMode(mode);
             this.user.setPassword(password);
-            userService.update(user);
+            userService.update(user, user.getId());
         }
         return user;
     }
@@ -189,19 +186,6 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
             userService.delete(user.getId());
             this.user = null;
         }
-    }
-
-    public void addLog(String message) {
-        final LogService logService = new LogService();
-        logService.insert(new LogDetail(message));
-        addToCache(message);
-    }
-
-    private void addToCache(String message) {
-        if (null == logs) {
-            loadLogs();
-        }
-        logs.addFirst(message);
     }
 
     public String getUserMode() {

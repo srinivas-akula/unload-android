@@ -4,9 +4,9 @@ public class AppUser {
 
     private long id;
     private String phone;
-    private String providerId;
-    private String uId;
-    private String displayName;
+    private String providerid;
+    private String uid;
+    private String displayname;
     private String mode;
     private String password;
 
@@ -26,28 +26,28 @@ public class AppUser {
         this.phone = phone;
     }
 
-    public String getProviderId() {
-        return providerId;
+    public String getProviderid() {
+        return providerid;
     }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public void setProviderid(String providerid) {
+        this.providerid = providerid;
     }
 
     public String getUid() {
-        return uId;
+        return uid;
     }
 
     public void setUid(String uId) {
-        this.uId = uId;
+        this.uid = uId;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDisplayname() {
+        return displayname;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setDisplayname(String displayname) {
+        this.displayname = displayname;
     }
 
     public String getMode() {
@@ -67,6 +67,6 @@ public class AppUser {
     }
 
     public boolean isDriverMode() {
-        return null != this.mode && mode.equals("D");
+        return "D".equalsIgnoreCase(mode);
     }
 }

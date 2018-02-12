@@ -25,6 +25,7 @@ import com.sringa.unload.R;
 import com.sringa.unload.db.AppDataBase;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,7 +36,7 @@ public class StatusActivity extends BaseActivity {
 
     private static final int LIMIT = 200;
 
-//    private static final LinkedList<String> messages = new LinkedList<>();
+    private static final LinkedList<String> messages = new LinkedList<>();
     private static final Set<ArrayAdapter<String>> adapters = new HashSet<>();
 
     private static void notifyAdapters() {
@@ -52,16 +53,16 @@ public class StatusActivity extends BaseActivity {
     public static void addMessage(String message) {
         DateFormat format = DateFormat.getTimeInstance(DateFormat.SHORT);
         message = format.format(new Date()) + " - " + message;
-        AppDataBase.INSTANCE.addLog(message);
-//        messages.add(message);
-//        while (messages.size() > LIMIT) {
-//            messages.removeFirst();
-//        }
+//        AppDataBase.INSTANCE.addLog(message);
+        messages.add(message);
+        while (messages.size() > LIMIT) {
+            messages.removeFirst();
+        }
         notifyAdapters();
     }
 
     public static void clearMessages() {
-//        messages.clear();
+        messages.clear();
         notifyAdapters();
     }
 
@@ -71,7 +72,10 @@ public class StatusActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list);
-        List<String> messages = AppDataBase.INSTANCE.getLogs();
+//        List<String> messages = AppDataBase.INSTANCE.getLogs();
+//        if (null == messages) {
+//            messages = new ArrayList<>();
+//        }
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, messages);
         ListView listView = findViewById(android.R.id.list);
         listView.setAdapter(adapter);

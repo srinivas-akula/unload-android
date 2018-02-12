@@ -6,6 +6,7 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="@color/full_white"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:paddingTop="60dp">
@@ -50,7 +51,6 @@
             style="@android:style/Widget.Holo.Light.Spinner"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/vehicle_model_values"
             android:paddingBottom="30dp"
             android:paddingTop="30dp"
             android:prompt="@string/vehicle_model"
@@ -61,7 +61,6 @@
             style="@android:style/Widget.Holo.Light.Spinner"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/vehicle_type_values"
             android:paddingBottom="30dp"
             android:paddingTop="30dp"
             android:prompt="@string/vehicle_type"

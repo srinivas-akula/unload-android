@@ -5,4 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@color/full_white"
     android:padding="@dimen/activity_horizontal_margin"
+    android:textColor="@color/black"
+    android:text="hallo"
+    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
     android:textSize="20sp"/>

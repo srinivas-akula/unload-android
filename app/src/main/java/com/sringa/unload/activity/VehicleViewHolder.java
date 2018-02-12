@@ -1,5 +1,6 @@
 package com.sringa.unload.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -7,16 +8,21 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.sringa.unload.R;
 import com.sringa.unload.db.AppDataBase;
+import com.sringa.unload.db.Constants;
 import com.sringa.unload.db.VehicleDetail;
+import com.sringa.unload.service.IRequestManager;
+import com.sringa.unload.service.ProtocolFormatter;
 import com.sringa.unload.utils.AssetsPropertyReader;
 import com.sringa.unload.utils.Utils;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,27 +34,31 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder implements View.O
     private TextView modelTypeText;
     private TextView tonnageText;
     private TextView axleType;
-    private ImageButton imgBtn;
+    private TextView location;
+    private ImageView imgBtn;
+    private ImageView locationIcon;
     private Button submitBtn, cancelBtn;
     private VehicleDetail vDetail;
     private Spinner stateSpinner, citySpinner;
-    private final VehicleListAdapter mAdapter;
     private final Context context;
     private final LinearLayout expandableLayout;
     private boolean isExpanded = false;
     private String state, city;
     private Properties cityStates;
     private final String tonUnit;
+    private final VehicleListAdapter mAdapter;
 
     public VehicleViewHolder(VehicleListAdapter mAdapter, View itemView, Context context) {
         super(itemView);
-        cityStates = AssetsPropertyReader.getProperties(context, "StateAndCities.properties");
         this.mAdapter = mAdapter;
+        cityStates = AssetsPropertyReader.getProperties(context, "StateAndCities.properties");
         numberView = (TextView) itemView.findViewById(R.id.vehicleNo);
         modelTypeText = (TextView) itemView.findViewById(R.id.vehicleModel);
         tonnageText = (TextView) itemView.findViewById(R.id.tonnage);
         axleType = (TextView) itemView.findViewById(R.id.axle);
-        imgBtn = (ImageButton) itemView.findViewById(R.id.toggleLoadBtn);
+        location = (TextView) itemView.findViewById(R.id.location);
+        imgBtn = (ImageView) itemView.findViewById(R.id.toggleLoadBtn);
+        locationIcon = (ImageView) itemView.findViewById(R.id.locationIcon);
         submitBtn = (Button) itemView.findViewById(R.id.submitLoad);
         cancelBtn = (Button) itemView.findViewById(R.id.btn_cancel);
         expandableLayout = (LinearLayout) itemView.findViewById(R.id.layout_expandable);
@@ -69,40 +79,67 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder implements View.O
 
     public void initView(VehicleDetail detail) {
         this.vDetail = detail;
-        numberView.setText(vDetail.getId());
+        numberView.setText(vDetail.getNumber());
         modelTypeText.setText(vDetail.getModel());
         tonnageText.setText(String.valueOf(vDetail.getTonnage()) + " " + tonUnit);
         axleType.setText(vDetail.getAxle());
-        imgBtn.setImageResource(vDetail.getLoad() == 1 ? R.mipmap.ic_loaded
-                : R.mipmap.ic_unloaded_truck);
+        location.setText(vDetail.getLocation());
+        if (null == vDetail.getLocation()) {
+            locationIcon.setVisibility(View.GONE);
+        }
+        imgBtn.setImageResource(vDetail.getLoad() == 1 ? R.mipmap.ic_truck
+                : R.mipmap.ic_truck_grey);
     }
 
     @Override
     public void onClick(View view) {
+
+        final ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setMessage("Processing...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
         switch (view.getId()) {
             case R.id.submitLoad:
                 if (!validate()) {
+                    dialog.dismiss();
                     return;
                 }
                 vDetail.setLoad(1 - vDetail.getLoad());
-                if (AppDataBase.INSTANCE.add(vDetail))
-                    mAdapter.notifyDataSetChanged();
-                expandableLayout.setVisibility(View.GONE);
-                isExpanded = false;
+                vDetail.setLocation(city + ", " + state);
+                final JSONObject jsonObject = ProtocolFormatter.toJson(vDetail, city);
+                AppDataBase.INSTANCE.getRequestManager().sendAsyncRequest(IRequestManager.Method.POST,
+                        Constants.POSITION_RESOURCE, jsonObject, new IRequestManager.IRequestHandler() {
+                            @Override
+                            public void onComplete(IRequestManager.Response response) {
+                                if (response.isSuccess()) {
+                                    AppDataBase.INSTANCE.update(vDetail);
+                                    mAdapter.notifyDataSetChanged();
+                                    expandableLayout.setVisibility(View.GONE);
+                                    locationIcon.setVisibility(View.VISIBLE);
+                                    isExpanded = false;
+                                }
+                                dialog.dismiss();
+                            }
+                        });
                 break;
             case R.id.toggleLoadBtn:
                 if (!isExpanded) {
                     expandableLayout.setVisibility(View.VISIBLE);
                     isExpanded = true;
                 }
+                dialog.dismiss();
                 break;
             case R.id.btn_cancel:
                 if (isExpanded) {
                     expandableLayout.setVisibility(View.GONE);
                     isExpanded = false;
                 }
+                dialog.dismiss();
                 break;
             default:
+                dialog.dismiss();
                 Intent intent = new Intent(context, AddVehicleActivity.class);
                 intent.putExtra("mode", "EDIT");
                 intent.putExtra("vehicle", vDetail);
@@ -129,7 +166,7 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder implements View.O
             stateList.add((String) s);
         }
         state = stateList.get(0);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.custom_spinner, new ArrayList<>(stateList));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.custom_spinner, new ArrayList<>(stateList));
         stateSpinner.setAdapter(adapter);
     }
 
@@ -142,7 +179,7 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder implements View.O
         if (!"Select State".equals(state)) {
             cities.add(0, "Select City");
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.custom_spinner, cities);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.custom_spinner, cities);
         citySpinner.setAdapter(adapter);
     }
 

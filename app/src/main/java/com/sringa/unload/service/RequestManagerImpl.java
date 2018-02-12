@@ -16,9 +16,10 @@
 package com.sringa.unload.service;
 
 import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.util.Base64;
+import android.util.Log;
 
-import com.sringa.unload.activity.StatusActivity;
 import com.sringa.unload.db.AppDataBase;
 import com.sringa.unload.db.AppUser;
 
@@ -39,9 +40,31 @@ public class RequestManagerImpl implements IRequestManager {
         private JSONObject jsonObj;
         private IRequestHandler handler;
 
+        private RequestAsyncTask asyncObject;
+
         public RequestAsyncTask(IRequestHandler handler, JSONObject jsonObj) {
             this.handler = handler;
             this.jsonObj = jsonObj;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            asyncObject = this;
+            new CountDownTimer(60000, 60000) {
+
+                public void onTick(long millisUntilFinished) {
+                }
+
+                public void onFinish() {
+                    // stop async task if not in progress
+                    if (asyncObject.getStatus() == AsyncTask.Status.RUNNING) {
+                        asyncObject.cancel(false);
+                        Response response = new Response();
+                        response.setError("Cancelled due to time out.");
+                        handler.onComplete(response);
+                    }
+                }
+            }.start();
         }
 
         @Override
@@ -76,7 +99,6 @@ public class RequestManagerImpl implements IRequestManager {
                     wr.flush();
                     wr.close();
                 }
-                StatusActivity.addMessage("URL " + urlStr + ", Method " + method);
                 urlConnection.connect();
                 int responseCode = urlConnection.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -84,10 +106,10 @@ public class RequestManagerImpl implements IRequestManager {
                     response.setResponse(readStream(urlConnection.getInputStream()));
                 } else {
                     response.setError(readStream(urlConnection.getErrorStream()));
-                    StatusActivity.addMessage("Error: " + response.getResponse());
+                    Log.e("Rest Error", response.getResponse());
                 }
             } catch (IOException e) {
-                StatusActivity.addMessage("URL " + urlStr + ", Method " + method + " Exception: " + e.toString());
+                Log.e("REST", e.toString());
             }
         }
         return response;
@@ -109,13 +131,13 @@ public class RequestManagerImpl implements IRequestManager {
                 response.append(line);
             }
         } catch (IOException e) {
-            StatusActivity.addMessage("Read Response: " + e.toString());
+            Log.e("Read Response: ", e.toString());
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    StatusActivity.addMessage("Read Response: " + e.toString());
+                    Log.e("Read Response: ", e.toString());
                 }
             }
         }

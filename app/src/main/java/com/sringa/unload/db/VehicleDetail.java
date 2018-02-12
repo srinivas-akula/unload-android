@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 public class VehicleDetail implements Serializable {
 
-    private String id;
+    private long id;
+    private String number;
+    private String location;
     private String model = "Semi-Bed";
     private int tonnage = 0;
     private int load = 0;
@@ -26,12 +28,12 @@ public class VehicleDetail implements Serializable {
         this.tonnage = tonnage;
     }
 
-    public String getId() {
-        return id;
+    public String getNumber() {
+        return number;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public String getAxle() {
@@ -50,4 +52,19 @@ public class VehicleDetail implements Serializable {
         this.model = model;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
 }

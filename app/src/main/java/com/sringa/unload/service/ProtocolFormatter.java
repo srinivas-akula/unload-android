@@ -57,9 +57,9 @@ public class ProtocolFormatter {
             obj.put("phone", user.getPhone());
             obj.put("mode", user.getMode());
             obj.put("uid", user.getUid());
-            obj.put("providerid", user.getProviderId());
+            obj.put("providerid", user.getProviderid());
             obj.put("password", user.getPassword());
-            obj.put("displayname", user.getDisplayName());
+            obj.put("displayname", user.getDisplayname());
         } catch (JSONException e) {
             Log.e("AppUser to JSON", e.getLocalizedMessage());
         }
@@ -70,26 +70,29 @@ public class ProtocolFormatter {
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("number", vehicle.getId());
+            obj.put("name", vehicle.getNumber());
+            obj.put("uniqueId", vehicle.getNumber());
             obj.put("model", vehicle.getModel());
-            obj.put("tonnage", vehicle.getTonnage());
-            obj.put("load", vehicle.getLoad());
-            obj.put("axle", vehicle.getAxle());
+            obj.put("category", "truck");
+            JSONObject attributes = new JSONObject();
+            attributes.put("tonnage", vehicle.getTonnage());
+            attributes.put("load", vehicle.getLoad());
+            attributes.put("axle", vehicle.getAxle());
+            obj.put("attributes", attributes);
+
         } catch (JSONException e) {
             Log.e("Vehicle to JSON", e.getLocalizedMessage());
         }
         return obj;
     }
 
-    public static JSONObject toJson(Position position) {
+    public static JSONObject toJson(VehicleDetail vehicleDetail, String state) {
 
         JSONObject obj = new JSONObject();
         try {
-            obj.put("id", position.getId());
-//            obj.put("model", vehicle.getModel());
-//            obj.put("tonnage", vehicle.getTonnage());
-//            obj.put("load", vehicle.getLoad());
-//            obj.put("axle", vehicle.getAxle());
+            obj.put("id", vehicleDetail.getNumber());
+            obj.put("address", state);
+            obj.put("load", vehicleDetail.getLoad());
         } catch (JSONException e) {
             Log.e("Position to JSON", e.getLocalizedMessage());
         }
