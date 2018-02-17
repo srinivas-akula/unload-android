@@ -2,7 +2,7 @@ package com.sringa.unload.db;
 
 public interface Constants {
 
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 1;
     public static final String USER_PASSWORD = "unload";
     public static final String DATABASE_NAME = "unload.db";
     public static final String SERVER = "http://192.168.0.185";

@@ -6,9 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -25,33 +23,24 @@ import com.sringa.unload.service.TrackingService;
 
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.sringa.unload.db.Constants.APP_USER_RESOURCE;
 import static com.sringa.unload.db.Constants.USER_PASSWORD;
 
 public class UserModeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private RadioGroup radioModeGroup;
-    private RadioButton radioSelected;
-    private Button btnSubmit;
-
-    private final Map<String, String> modeMap = new HashMap<String, String>() {
-        {
-            put("Owner", "O");
-            put("Driver", "D");
-        }
-    };
+    private ImageView driverIcon;
+    private ImageView ownerIcon;
+    private String mode = "O";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AppDataBase.init(this.getBaseContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_mode);
-        radioModeGroup = (RadioGroup) findViewById(R.id.radioUserMode);
-        btnSubmit = (Button) findViewById(R.id.btnSubmit);
-        btnSubmit.setOnClickListener(this);
+        driverIcon = (ImageView) findViewById(R.id.driverIcon);
+        driverIcon.setOnClickListener(this);
+        ownerIcon = (ImageView) findViewById(R.id.ownerIcon);
+        ownerIcon.setOnClickListener(this);
     }
 
     @Override
@@ -63,12 +52,11 @@ public class UserModeActivity extends AppCompatActivity implements View.OnClickL
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
 
-        // get selected radio button from radioGroup
-        int selectedId = radioModeGroup.getCheckedRadioButtonId();
-        radioSelected = (RadioButton) findViewById(selectedId);
-        final String mode = modeMap.get(radioSelected.getText().toString());
+        final ImageView imageView = (ImageView) v;
+        if (R.id.driverIcon == imageView.getId()) {
+            mode = "D";
+        }
         AppUser user = AppDataBase.INSTANCE.updateAppUser(USER_PASSWORD, mode);
-
         final JSONObject jsonObject = ProtocolFormatter.toJson(user);
         AppDataBase.INSTANCE.getRequestManager().sendAsyncRequest(IRequestManager.Method.POST, APP_USER_RESOURCE,
                 jsonObject, new IRequestManager.IRequestHandler() {

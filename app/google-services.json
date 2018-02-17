@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1067950649403-v4q1hn9frbivhu1dkqobfn3plqsql7in.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sringa.unload",
+            "certificate_hash": "409611b9771ea68c15f8b6912f20e57f8e4eb49d"
+          }
+        },
+        {
           "client_id": "1067950649403-j4ofj4jvctgb5s5jicgfjosrvva6hs1n.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1067950649403-j4ofj4jvctgb5s5jicgfjosrvva6hs1n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

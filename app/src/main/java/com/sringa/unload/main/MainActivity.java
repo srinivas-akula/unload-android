@@ -40,12 +40,12 @@ public class MainActivity extends BaseActivity {
         AppDataBase.init(this.getBaseContext());
         //Check if user exists??
         AppUser user = AppDataBase.INSTANCE.getAppUser();
-        if (null == user) {
-            user = new AppUser();
-            user.setPhone("8099968618");
-            user.setUid("xx235XX");
-            user = AppDataBase.INSTANCE.addAppUser(user);
-        }
+//        if(null == user) {
+//            user = new AppUser();
+//            user.setUid("123456");
+//            user.setPhone("9989364978");
+//            user = AppDataBase.INSTANCE.addAppUser(user);
+//        }
         if (null == user) {
             FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
             if (null == fbUser) {

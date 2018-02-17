@@ -87,8 +87,8 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder implements View.O
         if (null == vDetail.getLocation()) {
             locationIcon.setVisibility(View.GONE);
         }
-        imgBtn.setImageResource(vDetail.getLoad() == 1 ? R.mipmap.ic_truck
-                : R.mipmap.ic_truck_grey);
+        imgBtn.setImageResource(vDetail.getLoad() == 1 ? R.mipmap.ic_loaded
+                : R.mipmap.ic_unloaded);
     }
 
     @Override

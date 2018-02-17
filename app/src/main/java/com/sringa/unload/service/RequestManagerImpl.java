@@ -106,7 +106,6 @@ public class RequestManagerImpl implements IRequestManager {
                     response.setResponse(readStream(urlConnection.getInputStream()));
                 } else {
                     response.setError(readStream(urlConnection.getErrorStream()));
-                    Log.e("Rest Error", response.getResponse());
                 }
             } catch (IOException e) {
                 Log.e("REST", e.toString());

@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.PowerManager;
 import android.util.Log;
 
+import com.sringa.unload.service.DummyRequestManager;
 import com.sringa.unload.service.IRequestManager;
 import com.sringa.unload.service.NetworkManager;
 import com.sringa.unload.service.RequestManagerImpl;
