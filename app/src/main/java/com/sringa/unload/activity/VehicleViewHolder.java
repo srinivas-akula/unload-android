@@ -51,7 +51,7 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder implements View.O
     public VehicleViewHolder(VehicleListAdapter mAdapter, View itemView, Context context) {
         super(itemView);
         this.mAdapter = mAdapter;
-        cityStates = AssetsPropertyReader.getProperties(context, "StateAndCities.properties");
+        cityStates = AppDataBase.INSTANCE.getCityStates();
         numberView = (TextView) itemView.findViewById(R.id.vehicleNo);
         modelTypeText = (TextView) itemView.findViewById(R.id.vehicleModel);
         tonnageText = (TextView) itemView.findViewById(R.id.tonnage);
@@ -106,15 +106,16 @@ public class VehicleViewHolder extends RecyclerView.ViewHolder implements View.O
                     dialog.dismiss();
                     return;
                 }
-                vDetail.setLoad(1 - vDetail.getLoad());
-                vDetail.setLocation(city + ", " + state);
-                final JSONObject jsonObject = ProtocolFormatter.toJson(vDetail, city);
+                final int loadStatus = 1 - vDetail.getLoad();
+                final JSONObject jsonObject = ProtocolFormatter.toJson(vDetail, city, state, loadStatus);
                 AppDataBase.INSTANCE.getRequestManager().sendAsyncRequest(IRequestManager.Method.POST,
                         Constants.POSITION_RESOURCE, jsonObject, new IRequestManager.IRequestHandler() {
                             @Override
                             public void onComplete(IRequestManager.Response response) {
                                 if (response.isSuccess()) {
                                     AppDataBase.INSTANCE.update(vDetail);
+                                    vDetail.setLoad(loadStatus);
+                                    vDetail.setLocation(city + "," + state);
                                     mAdapter.notifyDataSetChanged();
                                     expandableLayout.setVisibility(View.GONE);
                                     locationIcon.setVisibility(View.VISIBLE);

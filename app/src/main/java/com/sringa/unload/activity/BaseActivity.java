@@ -19,6 +19,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final Map<String, Class> classMap = new HashMap<String, Class>() {
         {
             put("vehicles", VehicleListActivity.class);
+            put("change password", ChangePasswordActivity.class);
             put("status", StatusActivity.class);
             put("about", AboutActivity.class);
         }

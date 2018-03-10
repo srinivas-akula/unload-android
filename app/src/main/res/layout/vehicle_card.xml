@@ -167,7 +167,7 @@
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="2dp"
                     android:layout_weight="1.0"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/colorSecondaryBtn"
                     android:text="@string/btn_cancel"
                     android:textColor="@android:color/white" />
 
@@ -178,7 +178,7 @@
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="2dp"
                     android:layout_weight="1.0"
-                    android:background="@color/colorPrimary"
+                    android:background="@color/colorPrimaryBtn"
                     android:text="@string/vehicle_submit"
                     android:textColor="@android:color/white" />
 

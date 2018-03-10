@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.sringa.unload.R;
 import com.sringa.unload.db.AppDataBase;
@@ -27,8 +28,10 @@ import org.json.JSONObject;
 public class AddVehicleActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private Button btnSubmit;
+    private Button btnCancel;
     private EditText vNumber;
     private EditText vTonnage;
+    private TextView errorText;
     private Spinner axleSpinner;
     private Spinner modelSpinner;
     private String axleType;
@@ -42,6 +45,7 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
         setContentView(R.layout.activity_add_vehicle);
 
         vNumber = (EditText) findViewById(R.id.vnumber);
+        errorText = (TextView) findViewById(R.id.errorText);
         vTonnage = (EditText) findViewById(R.id.vtonnage);
 
         axleSpinner = (Spinner) findViewById(R.id.axleType);
@@ -55,10 +59,14 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
         modelSpinner.setAdapter(modelAdapter);
 
         btnSubmit = (Button) findViewById(R.id.btnUpdate);
+        btnSubmit.setOnClickListener(this);
+
+        btnCancel = (Button) findViewById(R.id.btnCancel);
+        btnCancel.setOnClickListener(this);
 
         axleSpinner.setOnItemSelectedListener(this);
         modelSpinner.setOnItemSelectedListener(this);
-        btnSubmit.setOnClickListener(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         fillValues();
     }
 
@@ -100,6 +108,11 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
 
+        if (v.getId() == R.id.btnCancel) {
+            onBackPressed();
+            return;
+        }
+
         final ProgressDialog dialog = new ProgressDialog(AddVehicleActivity.this);
         dialog.setMessage("Processing...");
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -140,6 +153,9 @@ public class AddVehicleActivity extends BaseActivity implements View.OnClickList
                     if (success) {
                         proceed();
                     }
+                    errorText.setVisibility(View.GONE);
+                } else {
+                    errorText.setVisibility(View.VISIBLE);
                 }
                 dialog.dismiss();
             }

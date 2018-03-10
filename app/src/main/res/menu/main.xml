@@ -4,12 +4,16 @@
     <item
         android:id="@+id/clear"
         android:title="@string/menu_clear"
-        app:showAsAction="always"
-        android:visible="false"/>
+        android:visible="false"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/vehicles"
         android:title="@string/menu_vehicles" />
+
+    <item
+        android:id="@+id/changePwd"
+        android:title="Change Password" />
 
     <item
         android:id="@+id/status"
@@ -23,7 +27,7 @@
 
     //TODO: do it in future.
     <!--<item-->
-        <!--android:id="@+id/feedback"-->
-        <!--android:title="@string/menu_feedback"-->
-        <!--app:showAsAction="never" />-->
+    <!--android:id="@+id/feedback"-->
+    <!--android:title="@string/menu_feedback"-->
+    <!--app:showAsAction="never" />-->
 </menu>

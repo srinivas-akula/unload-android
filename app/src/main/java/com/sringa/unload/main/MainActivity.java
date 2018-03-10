@@ -40,7 +40,7 @@ public class MainActivity extends BaseActivity {
         AppDataBase.init(this.getBaseContext());
         //Check if user exists??
         AppUser user = AppDataBase.INSTANCE.getAppUser();
-//        if(null == user) {
+//        if (null == user) {
 //            user = new AppUser();
 //            user.setUid("123456");
 //            user.setPhone("9989364978");

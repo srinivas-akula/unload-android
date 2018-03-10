@@ -15,7 +15,8 @@
             android:id="@+id/selectText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Vehicle Details"
+            android:layout_marginBottom="10dp"
+            android:text="Change Password"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textColor="@color/black" />
 
@@ -29,72 +30,38 @@
             android:visibility="gone" />
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout_number"
+            android:id="@+id/password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="20dp">
 
             <EditText
-                android:id="@+id/vnumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-                android:gravity="top"
-                android:hint="@string/vehicle_id"
-                android:inputType="textCapCharacters"
-                android:maxLength="10" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout_tonnage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="20dp">
-
-            <EditText
-                android:id="@+id/vtonnage"
+                android:id="@+id/password"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/vehicle_tonnage"
-                android:inputType="number"
-                android:maxLength="2" />
+                android:gravity="top"
+                android:hint="New Password"
+                android:inputType="textPassword"
+                android:maxLength="15" />
         </android.support.design.widget.TextInputLayout>
 
-        <LinearLayout
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/confirmPwd_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2.0">
+            android:paddingTop="20dp">
 
-            <Spinner
-                android:id="@+id/vmodel"
-                style="@android:style/Widget.Holo.Light.Spinner"
+            <EditText
+                android:id="@+id/confirmPwd"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="30dp"
-                android:paddingTop="30dp"
-                android:prompt="@string/vehicle_model"
-                android:spinnerMode="dropdown" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2.0">
-
-            <Spinner
-                android:id="@+id/axleType"
-                style="@android:style/Widget.Holo.Light.Spinner"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="30dp"
-                android:paddingTop="30dp"
-                android:prompt="@string/vehicle_type"
-                android:spinnerMode="dropdown" />
-
-        </LinearLayout>
+                android:layout_weight="1"
+                android:gravity="top"
+                android:hint="Confirm Password"
+                android:inputType="textPassword"
+                android:maxLength="15" />
+        </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -115,9 +82,8 @@
                 android:text="@string/btn_cancel"
                 android:textColor="@android:color/white" />
 
-
             <Button
-                android:id="@+id/btnUpdate"
+                android:id="@+id/btnSubmit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
@@ -128,5 +94,4 @@
                 android:textColor="@android:color/white" />
         </LinearLayout>
     </LinearLayout>
-
 </android.support.design.widget.CoordinatorLayout>

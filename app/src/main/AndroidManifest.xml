@@ -30,32 +30,22 @@
             </intent-filter>
         </activity>
 
-        <!-- User Phone Auth Activity -->
-        <!--<activity-->
-        <!--android:name="com.sringa.unload.activity.UserPhoneAuthActivity"-->
-        <!--android:label="@string/app_name">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.PHONE_AUTH" />-->
-        <!--<category android:name="android.intent.category.DEFAULT" />-->
-        <!--</intent-filter>-->
-        <!--</activity>-->
-
-        <!-- OTP Activity -->
-        <!--<activity-->
-        <!--android:name="com.sringa.unload.activity.OtpActivity"-->
-        <!--android:label="@string/app_name">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.OTP" />-->
-        <!--<category android:name="android.intent.category.DEFAULT" />-->
-        <!--</intent-filter>-->
-        <!--</activity>-->
-
         <!-- User Mode Activity -->
         <activity
             android:name="com.sringa.unload.activity.UserModeActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.USER_MODE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Change Password Activity -->
+        <activity
+            android:name="com.sringa.unload.activity.ChangePasswordActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.CHANGE_PWD" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

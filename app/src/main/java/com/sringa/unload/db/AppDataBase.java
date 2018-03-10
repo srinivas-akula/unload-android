@@ -12,14 +12,17 @@ import com.sringa.unload.service.DummyRequestManager;
 import com.sringa.unload.service.IRequestManager;
 import com.sringa.unload.service.NetworkManager;
 import com.sringa.unload.service.RequestManagerImpl;
+import com.sringa.unload.utils.AssetsPropertyReader;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static com.sringa.unload.db.Constants.DATABASE_NAME;
 import static com.sringa.unload.db.Constants.DATABASE_VERSION;
+import static com.sringa.unload.db.Constants.DUMMY;
 
 public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, NetworkManager.NetworkHandler {
 
@@ -40,7 +43,10 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
     private final IRequestManager requestManager;
 
     private boolean isOnline;
-    private NetworkManager networkManager;
+
+    private final NetworkManager networkManager;
+
+    private final Properties cityStates;
 
     private boolean isServiceRunning = false;
 
@@ -56,6 +62,7 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
         return isServiceRunning;
     }
 
+
     public static void init(Context context) {
         if (null == INSTANCE) {
             INSTANCE = new AppDataBase(context);
@@ -69,7 +76,12 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         networkManager = new NetworkManager(context, this);
         isOnline = networkManager.isOnline();
-        this.requestManager = new RequestManagerImpl();
+        this.requestManager = DUMMY ? new DummyRequestManager() : new RequestManagerImpl();
+        cityStates = AssetsPropertyReader.getProperties(context, "StateAndCities.properties");
+    }
+
+    public Properties getCityStates() {
+        return cityStates;
     }
 
     public IRequestManager getRequestManager() {
@@ -165,6 +177,9 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
 
     public AppUser addAppUser(AppUser user) {
         final AppUserService userService = new AppUserService();
+        if (user.getPhone().startsWith("+")) {
+            user.setPhone(user.getPhone().substring(1));
+        }
         long id = userService.insert(user);
         user.setId(id);
         this.user = user;
@@ -174,12 +189,26 @@ public final class AppDataBase extends SQLiteOpenHelper implements IDataBase, Ne
     public AppUser updateAppUser(String password, String mode) {
         if (null != user) {
             final AppUserService userService = new AppUserService();
+            if (user.getPhone().startsWith("+")) {
+                user.setPhone(user.getPhone().substring(1));
+            }
             this.user.setMode(mode);
             this.user.setPassword(password);
             userService.update(user, user.getId());
         }
         return user;
     }
+
+    public boolean updatePassword(String password) {
+        if (null != user) {
+            final AppUserService userService = new AppUserService();
+            this.user.setPassword(password);
+            userService.update(user, user.getId());
+            return true;
+        }
+        return false;
+    }
+
 
     public void deleteAppUser(AppUser user) {
         if (null != user) {

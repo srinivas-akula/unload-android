@@ -34,6 +34,9 @@ public class SimplePositionProvider extends PositionProvider implements Location
 
     public void startUpdates() {
         try {
+            if (null == locationManager) {
+                return;
+            }
             locationManager.requestLocationUpdates(type, requestInterval, 0, this);
         } catch (IllegalArgumentException e) {
             Log.w(TAG, e);
@@ -41,6 +44,9 @@ public class SimplePositionProvider extends PositionProvider implements Location
     }
 
     public void stopUpdates() {
+        if (null == locationManager) {
+            return;
+        }
         locationManager.removeUpdates(this);
     }
 
@@ -60,5 +66,4 @@ public class SimplePositionProvider extends PositionProvider implements Location
     @Override
     public void onProviderDisabled(String provider) {
     }
-
 }

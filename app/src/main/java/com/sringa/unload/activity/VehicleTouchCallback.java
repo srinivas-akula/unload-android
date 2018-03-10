@@ -1,6 +1,6 @@
 package com.sringa.unload.activity;
 
-
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -48,29 +48,7 @@ public class VehicleTouchCallback extends ItemTouchHelper.SimpleCallback {
             builder.setPositiveButton(R.string.menu_delete_vehicle, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-
-                    final VehicleDetail vDetail = vehicleDetails.get(position);
-                    JSONObject jsonObject = ProtocolFormatter.toJson(vDetail);
-                    final String url = String.format(Constants.VEHICLE_ID_RESOURCE, vDetail.getNumber());
-                    AppDataBase.INSTANCE.getRequestManager().sendAsyncRequest(IRequestManager.Method.DELETE, url, jsonObject, new IRequestManager.IRequestHandler() {
-
-                        @Override
-                        public void onComplete(IRequestManager.Response response) {
-                            if (response.isSuccess()) {
-                                if (AppDataBase.INSTANCE.deleteVehicle(vDetail)) {
-                                    vehicleDetails.remove(position);
-                                    if (vehicleDetails.isEmpty()) {
-                                        context.startActivity(new Intent(context, VehicleListActivity.class));
-                                    } else {
-                                        adapter.notifyItemRemoved(position);
-                                    }
-                                } else {
-                                    adapter.notifyItemRemoved(position + 1);
-                                    adapter.notifyItemRangeChanged(position, adapter.getItemCount());
-                                }
-                            }
-                        }
-                    });
+                    delete(position);
                     return;
                 }
             }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -82,5 +60,41 @@ public class VehicleTouchCallback extends ItemTouchHelper.SimpleCallback {
                 }
             }).show();
         }
+    }
+
+    private void delete(final int position) {
+
+        final ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setMessage("Processing...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
+        final VehicleDetail vDetail = vehicleDetails.get(position);
+        JSONObject jsonObject = ProtocolFormatter.toJson(vDetail);
+        final String url = String.format(Constants.VEHICLE_ID_RESOURCE, vDetail.getNumber());
+        AppDataBase.INSTANCE.getRequestManager().sendAsyncRequest(IRequestManager.Method.DELETE, url, jsonObject, new IRequestManager.IRequestHandler() {
+
+            @Override
+            public void onComplete(IRequestManager.Response response) {
+                if (response.isSuccess()) {
+                    if (AppDataBase.INSTANCE.deleteVehicle(vDetail)) {
+                        vehicleDetails.remove(position);
+                        if (vehicleDetails.isEmpty()) {
+                            context.startActivity(new Intent(context, VehicleListActivity.class));
+                        } else {
+                            adapter.notifyItemRemoved(position);
+                        }
+                    } else {
+                        adapter.notifyItemRemoved(position + 1);
+                        adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+                    }
+                } else {
+                    adapter.notifyItemRemoved(position + 1);
+                    adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+                }
+                dialog.dismiss();
+            }
+        });
     }
 }

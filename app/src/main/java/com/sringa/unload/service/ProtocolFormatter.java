@@ -86,13 +86,14 @@ public class ProtocolFormatter {
         return obj;
     }
 
-    public static JSONObject toJson(VehicleDetail vehicleDetail, String state) {
+    public static JSONObject toJson(VehicleDetail vehicleDetail, String city, String state, int loadStatus) {
 
         JSONObject obj = new JSONObject();
         try {
             obj.put("id", vehicleDetail.getNumber());
-            obj.put("address", state);
-            obj.put("load", vehicleDetail.getLoad());
+            obj.put("city", city);
+            obj.put("state", state.substring(0, state.length()-4));
+            obj.put("load", loadStatus);
         } catch (JSONException e) {
             Log.e("Position to JSON", e.getLocalizedMessage());
         }

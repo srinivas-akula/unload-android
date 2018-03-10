@@ -2,6 +2,7 @@ package com.sringa.unload.db;
 
 public interface Constants {
 
+    public static final boolean DUMMY = false;
     public static final int DATABASE_VERSION = 1;
     public static final String USER_PASSWORD = "unload";
     public static final String DATABASE_NAME = "unload.db";
@@ -15,4 +16,5 @@ public interface Constants {
     public static final String POSITION_RESOURCE = SERVER_URL + REST_END + "/positions";
     public static final String VEHICLE_ID_RESOURCE = SERVER_URL + REST_END + "/devices/%s";
     public static final String APP_USER_RESOURCE = SERVER_URL + REST_END + "/users/app";
+    public static final String APP_USER_CHANGE_PWD = SERVER_URL + REST_END + "/users/changepwd";
 }

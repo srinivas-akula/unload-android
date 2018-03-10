@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Unload</string>
-    <string name="about_text">To know more about, please visit us at
+    <string name="about_text">
+        Stop calling Transport companies every day.
+        \'Unload\' will reach you with several loading options.<br/>
+
+        At the same time, it is easy to track your vehicles always.<br/>
+
+        To know more about, please visit us at
         www.unload.co.in</string>
 
     <string name="settings_url_default_value" translatable="false">http://unload.co.in:5055</string>

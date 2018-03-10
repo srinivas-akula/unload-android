@@ -16,6 +16,18 @@
         app:layout_constraintBottom_toTopOf="@+id/driverIcon"
         app:layout_constraintStart_toStartOf="@+id/ownerIcon" />
 
+    <TextView
+        android:id="@+id/errorText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:text="Error occurred. Please try again."
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="@color/red"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/driverIcon"
+        app:layout_constraintStart_toStartOf="@+id/ownerIcon" />
+
     <ImageView
         android:id="@+id/ownerIcon"
         android:layout_width="120dp"
@@ -37,6 +49,7 @@
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="@+id/ownerIcon"
         app:layout_constraintTop_toBottomOf="@+id/driverIcon" />
+
 
     <ImageView
         android:id="@+id/driverIcon"
